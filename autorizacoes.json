@@ -1,0 +1,23 @@
+{
+    "autorizados": [
+        {
+            "nome": "tonho stark",
+            "biografia": "milionário, playboy e filantropista, conhecido como homem de ferro",
+            "foto": "/media/gio-ubuntu-20/Arquivos-M2/Linux/Workspace/Gym-Control/faces/tonho1.jpg"
+        },
+        {
+            "nome": "viúva negra",
+            "biografia": "ex-espiã russa e agente da S.H.I.E.L.D.",
+            "foto": "/media/gio-ubuntu-20/Arquivos-M2/Linux/Workspace/Gym-Control/faces/viuva1.jpg"
+        }
+    ],
+
+    "suspeitos": [
+        {
+            "nome": "loki",
+            "biografia": "asgardiano, irmão de thor e perigoso",
+            "recomendacao": "chamar os vingadores",
+            "foto": "/media/gio-ubuntu-20/Arquivos-M2/Linux/Workspace/Gym-Control/faces/loki1.jpg"
+        }
+    ]
+}
