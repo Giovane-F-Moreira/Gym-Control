@@ -58,14 +58,16 @@ Doubt, consult the documentation in GitHub [create a solicitate pull](https://he
   </tr>
   <tr>
     <td>
-      <sub>
+    <center>
+      <sub>        
         <b>Project creator</b>
-      </sub>
+        </sub>
+      </center>
     </td>
   </tr>
 </table>
 
-## 😄 Be a contributor `<br>`
+## 😄 Be a contributor
 
 Do you want to be part of this project? Click [HERE](CONTRIBUTING.md) and read how to contribute.
 
