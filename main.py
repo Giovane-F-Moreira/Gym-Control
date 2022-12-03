@@ -1,122 +1,185 @@
 import face_recognition
-import json
 from Pessoa import Pessoa
 from Academia import Academia
 import random
 
 # ARQUIVO_AUTORIZACOES = "/media/gio-ubuntu-20/Arquivos-M2/Linux/Workspace/Gym-Control/autorizacoes.json"
 
-def iniciar():
-    pass
+cache_de_imagens = {}
 
-
-"""========================== Function ==========================
-It loads the image file, finds the face in the image, and then encodes the face into a 128-d vector
-
-    ------------------------ Parameters ------------------------
-:param foto_original: The path to the image file containing the face of the person we want to
-recognize
-==================================================================
-"""
-def configurar_reconhecedor(foto_original):
-    global encoding_foto_original 
+def cadastro():
+    arlindo =   Pessoa('Arlindo',   
+                       'Youtuber conhecido por utilizar esteroides anabolizantes',
+                       False,
+                       '/media/gio-ubuntu-20/Arquivos-M2/Linux/Workspace/Gym-Control/faces/photos/Arnaldo_1.png',  
+                       True, 
+                       0)
     
-    # Vai processar os bits e encodar em um formato especifico
-    foto = face_recognition.load_image_file(foto_original)
-    encoding_foto_original = face_recognition.face_encodings(foto)[0]     
-
-
-
-"""========================== Function ==========================
-It loads the image file, finds the face in the image, and then compares the face to the known face
-
------------------------- Parameters ------------------------
-:param foto: The path to the image you want to compare
-
-........................ Returns ...........................
-:return: A list of True or False
-==================================================================
-"""
-def comparar_com_original(foto, nome):
-
-    global encoding_foto_original
+    ronnie =    Pessoa('Ronnie',    
+                       'Foi campeão no Mr. Olympia',
+                       True,
+                       '/media/gio-ubuntu-20/Arquivos-M2/Linux/Workspace/Gym-Control/faces/photos/Ronnie_1.png',
+                       True, 
+                       0)
     
-    resultado = None
+    graccyane = Pessoa('Graccyane', 
+                       'É modelo, fisiculturista e já foi dançarina',
+                       True,
+                       '/media/gio-ubuntu-20/Arquivos-M2/Linux/Workspace/Gym-Control/faces/photos/Gracyanne_1.png',
+                       True, 
+                       0)
     
-    try:
-        nova_foto = face_recognition.load_image_file(foto)
-        encoding_nova_foto = face_recognition.face_encodings(nova_foto)[0]
+    return [arlindo,ronnie,graccyane]
+
+def configurar():
+    autorizados, suspeitos = [], [] 
+
+    pessoas = cadastro()
+    
+    autorizados = [pessoas[1],pessoas[2]]
+    suspeitos = [pessoas[0]]    
+           
+    for contador, autorizado in enumerate(autorizados):
+        print(f"Codificando características faciais de {contador} autorizados")
+
+        foto = face_recognition.load_image_file(autorizado.foto)
+        autorizado.caracteristicas_faciais = face_recognition.face_encodings(foto)[0]
+
+    for contador, suspeito in enumerate(suspeitos):
+        print(f"Codificando características faciais de {contador} suspeitos")
+
+        foto = face_recognition.load_image_file(suspeito.foto)
+        suspeito.caracteristicas_faciais = face_recognition.face_encodings(foto)[0]
+
+    return autorizados, suspeitos
+
+
+def processar_caracteristicas_de_visitantes(foto_visitantes):
+    caracteristicas = None
+
+    if foto_visitantes in cache_de_imagens:
+        caracteristicas = cache_de_imagens[foto_visitantes]
+    else:
+        foto = face_recognition.load_image_file(foto_visitantes)
+        caracteristicas = face_recognition.face_encodings(foto)
+
+        cache_de_imagens[foto_visitantes] = caracteristicas
+
+    return caracteristicas
+
+def autorizar(autorizados, visitantes):
+    acessos_permitidos = []
+    global pessoas
+    pessoas = []
+    global academia 
+
+    caracteristicas_dos_visitantes = processar_caracteristicas_de_visitantes(visitantes)
+
+    # 1. percorrer toda a lista de pessoas autorizadas
+    for autorizado in autorizados:
+        # 2. testar se a foto da pessoa autorizada está entre os visitantes
+        acesso_permitido = True in face_recognition.compare_faces(
+            caracteristicas_dos_visitantes, autorizado.caracteristicas_faciais)
+        # 3. se a foto for reconhecida, permitir o acesso e retornar as informacoes de nome e biografia
+        if acesso_permitido:
+            acessos_permitidos.append(autorizado)
         
-        resultado = face_recognition.compare_faces([encoding_foto_original], encoding_nova_foto)
-    except:
-        pass
-    
-    return resultado
- 
-def mensalidade_paga(pessoa):
-    pass
+        pessoas.append(autorizado)     
+      
+    return len(acessos_permitidos) > 0, acessos_permitidos
 
-def dias_treino(pessoa):
-    pass 
-       
-# A way to make sure that the code in the if statement only runs if the module is executed as the main
-# program.
+def detectar_suspeitos(suspeitos, visitantes):
+    suspeitos_detectados = []
+
+    caracteristicas_dos_visitantes = processar_caracteristicas_de_visitantes(visitantes)
+
+    # 1. percorrer toda a lista de pessoas autorizadas
+    for suspeito in suspeitos:
+        # 2. testar se a foto da pessoa suspeita está entre os visitantes
+        suspeito_detectado = True in face_recognition.compare_faces(
+            caracteristicas_dos_visitantes, suspeito.caracteristicas_faciais)
+        # 3. se a foto for reconhecida, avisar que suspeito foi reconhecido
+        if suspeito_detectado:
+            suspeitos_detectados.append(suspeito)
+
+    return len(suspeitos_detectados) > 0, suspeitos_detectados
+
+
 if __name__ == '__main__':
-    iniciar()
-    
-    foto_original = "/media/gio-ubuntu-20/Arquivos-M2/Linux/Workspace/Gym-Control/faces/photos/Arnaldo_1.png"
-    configurar_reconhecedor(foto_original)
-    
-    fotos = ["/media/gio-ubuntu-20/Arquivos-M2/Linux/Workspace/Gym-Control/faces/photos/Arnaldo_1.png",
-             "/media/gio-ubuntu-20/Arquivos-M2/Linux/Workspace/Gym-Control/faces/photos/Arnaldo_2.png", 
-             "/media/gio-ubuntu-20/Arquivos-M2/Linux/Workspace/Gym-Control/faces/photos/Arnaldo_3.png",
-             
-             "/media/gio-ubuntu-20/Arquivos-M2/Linux/Workspace/Gym-Control/faces/photos/Ronnie_1.png",
-             "/media/gio-ubuntu-20/Arquivos-M2/Linux/Workspace/Gym-Control/faces/photos/Ronnie_2.png",
-             "/media/gio-ubuntu-20/Arquivos-M2/Linux/Workspace/Gym-Control/faces/photos/Ronnie_3.png"
-             ]
-    
-    # contador = 1
-    # while contador <= 10:
-    #     print("-------------------",dias_treino)
-    #     dias_treino += 1
-        
-    #     for foto in fotos:
-    #         resultado = comparar_com_original(foto)
-            
-    #         if resultado:
-    #            dias_treino
-    #            print("")
-    #            dias_treino_ronnie = dias_treino_ronnie + 1
-            
-    #         print("Resultado da comparação", resultado)
-    
-    
-    print("Teste com orientação a objetos")
-    
-    arlindo = Pessoa('Arlindo', 'photo', bool(random.getrandbits(1)), 0)
-    ronnie = Pessoa('Ronnie', 'photo', bool(random.getrandbits(1)), 0)
-    graccyane = Pessoa('Graccyane', 'photo', bool(random.getrandbits(1)), 0)
+    autorizados, suspeitos = configurar()
 
-    pessoas = [arlindo,ronnie,graccyane]
+    capturas = ["/media/gio-ubuntu-20/Arquivos-M2/Linux/Workspace/Gym-Control/faces/grupos/autorizados.png",
+                "/media/gio-ubuntu-20/Arquivos-M2/Linux/Workspace/Gym-Control/faces/grupos/suspeitos.png",
 
-    academia = Academia(pessoas)
+                "/media/gio-ubuntu-20/Arquivos-M2/Linux/Workspace/Gym-Control/faces/photos/Arnaldo_1.png",
+                "/media/gio-ubuntu-20/Arquivos-M2/Linux/Workspace/Gym-Control/faces/photos/Arnaldo_2.png",
+                "/media/gio-ubuntu-20/Arquivos-M2/Linux/Workspace/Gym-Control/faces/photos/Arnaldo_3.png",
+                ]
+    
+    print('**********************************  Reconhecimento Facial  **********************************')
+    for captura in capturas:
+        print(f"processando captura: {captura}")
 
-    i = 0
-    while i <= 60:
-        print('=========================================',i,'º Dia: =========================================')  
-        if i == 30:
-            pessoas[0].inadiplente = bool(random.getrandbits(1))
-            pessoas[1].inadiplente = bool(random.getrandbits(1))
-            pessoas[2].inadiplente = bool(random.getrandbits(1))
-            academia.treinar(pessoas)
-            
-        elif i == 60:
-            academia.exibir_informacoes()
-        
+        existem_permissoes, acessos_permitidos = autorizar(
+            autorizados, captura)
+        if existem_permissoes:
+            for permissao in acessos_permitidos:                
+                print(f"{permissao.nome}, teve a face reconhecida")
         else:
-            academia.treinar(pessoas)
+            print(f"nenhuma pessoa permitida")
+
+        existem_suspeitos, suspeitos_detectados = detectar_suspeitos(
+            suspeitos, captura)
+        if existem_suspeitos:
+            for suspeito in suspeitos_detectados:
+                print(f"detectado um suspeito: {suspeito.nome}")
+        else:
+            print(f"nenhum suspeito detectado")
+
+     
+    arlindo =   Pessoa('Arlindo',   
+                       'Youtuber conhecido por utilizar esteroides anabolizantes. ',
+                       False,
+                       '/media/gio-ubuntu-20/Arquivos-M2/Linux/Workspace/Gym-Control/faces/photos/Arnaldo_1.png',  
+                       True, 
+                       0)
     
-        
+    ronnie =    Pessoa('Ronnie',    
+                       'Um fisiculturista norte-americano, detentor do recorde de oito títulos consecutivos de Mr. Olympia. ',
+                       True,
+                       '/media/gio-ubuntu-20/Arquivos-M2/Linux/Workspace/Gym-Control/faces/photos/Ronnie_1.png',
+                       True, 
+                       0)
+    
+    graccyane = Pessoa('Graccyane', 
+                       'É uma modelo de fisiculturismo, rainha de bateria e ex-dançarina brasileira. ',
+                       True,
+                       '/media/gio-ubuntu-20/Arquivos-M2/Linux/Workspace/Gym-Control/faces/photos/Gracyanne_1.png',
+                       True, 
+                       0)
+
+    academia = Academia(pessoas)   
+    academia.realizar_pagamento(pessoas)
+    
+    i = 0
+    while i < 30:
+        print('=========================================',i+1,'º Dia: =========================================')  
+
+        cont = 0
+        while cont < len(pessoas):
+            if pessoas[cont].inadiplente:
+                print(pessoas[cont].nome,'está inadiplente')
+                pessoas[cont].inadiplente = bool(random.getrandbits(1))
+                if pessoas[cont].inadiplente:
+                    print(pessoas[cont].nome, 'efetuou o pagamento da mensalidade, Catraca LIBERADA!')
+
+            else:
+                print('A mensalidade de',pessoas[cont].nome,'está paga')
+                academia.treinar(pessoas[cont])
+            
+            cont = cont + 1
+            
+        if i == 29:
+            academia.exibir_informacoes()
+           
         i=i+1
-        

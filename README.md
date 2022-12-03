@@ -10,11 +10,9 @@ This project are developoment, their futures features will be:
 
 - [X] Face Recognition
 - [ ] Unlock ticket gate for person autorized
-- [ ] Count day of training
-- [ ] Payaments monthly
-- [ ] Offer birthday month discount
+- [X] Count day of training
+- [X] Payaments monthly
 - [ ] Create interface grafical
-- [ ] Capture the photo, and recognize it through the webcam
 
 ## 💻 Requisites
 
@@ -59,7 +57,7 @@ Doubt, consult the documentation in GitHub [create a solicitate pull](https://he
   <tr>
     <td>
     <center>
-      <sub>        
+      <sub>      
         <b>Project creator</b>
         </sub>
       </center>

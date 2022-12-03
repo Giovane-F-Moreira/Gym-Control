@@ -1,7 +1,7 @@
 import face_recognition
 import json
 
-ARQUIVO_AUTORIZACOES = "/media/gio-ubuntu-20/Arquivos-M2/Linux/Workspace/Gym-Control/autorizacoes-original.json"
+ARQUIVO_AUTORIZACOES = "/media/gio-ubuntu-20/Arquivos-M2/Linux/Workspace/Gym-Control/autorizacoes.json"
 
 cache_de_imagens = {}
 
@@ -13,6 +13,7 @@ def configurar():
         if autorizacoes:
             autorizados = autorizacoes["autorizados"]
             suspeitos = autorizacoes["suspeitos"]
+            print('a', autorizados, 's',suspeitos)
 
     for contador, autorizado in enumerate(autorizados):
         print(f"codificando características faciais de {contador} autorizados")
